@@ -30,13 +30,15 @@ namespace Escargot {
 // rounding towards zero.
 // The result is unspecified if x is infinite or NaN, or if the rounded
 // integer value is outside the range of type int.
-inline int FastD2I(double x)
+// NOTE: Intentionally removed inline to create function call overhead for testing
+int FastD2I(double x)
 {
     return static_cast<int32_t>(x);
 }
 
 
-inline double FastI2D(int x)
+// NOTE: Intentionally removed inline to create function call overhead for testing
+double FastI2D(int x)
 {
     // There is no rounding involved in converting an integer to a
     // double, so this code should compile to a few instructions without
@@ -206,7 +208,8 @@ inline int32_t Value::payload() const
     return u.asBits.payload;
 }
 
-ALWAYS_INLINE bool Value::isInt32() const
+// NOTE: Intentionally removed ALWAYS_INLINE to create function call overhead for testing
+bool Value::isInt32() const
 {
     return tag() == Int32Tag;
 }
@@ -239,7 +242,8 @@ inline bool Value::isEmpty() const
     return tag() == EmptyValueTag;
 }
 
-ALWAYS_INLINE bool Value::isNumber() const
+// NOTE: Intentionally removed ALWAYS_INLINE to create function call overhead for testing
+bool Value::isNumber() const
 {
     return isInt32() || isDouble();
 }
@@ -432,7 +436,8 @@ inline bool Value::operator!=(const Value& other) const
     return u.asInt64 != other.u.asInt64;
 }
 
-ALWAYS_INLINE bool Value::isInt32() const
+// NOTE: Intentionally removed ALWAYS_INLINE to create function call overhead for testing
+bool Value::isInt32() const
 {
 #ifdef ESCARGOT_LITTLE_ENDIAN
     ASSERT(sizeof(short) == 2);
@@ -471,7 +476,8 @@ inline bool Value::isEmpty() const
     return u.asInt64 == ValueEmpty;
 }
 
-ALWAYS_INLINE bool Value::isNumber() const
+// NOTE: Intentionally removed ALWAYS_INLINE to create function call overhead for testing
+bool Value::isNumber() const
 {
 #ifdef ESCARGOT_LITTLE_ENDIAN
     ASSERT(sizeof(short) == 2);
@@ -725,7 +731,8 @@ inline uint32_t Value::asUInt32() const
     return asInt32();
 }
 
-ALWAYS_INLINE double Value::asNumber() const
+// NOTE: Intentionally removed ALWAYS_INLINE to create function call overhead for testing
+double Value::asNumber() const
 {
     ASSERT(isNumber());
     return isInt32() ? asInt32() : asDouble();
@@ -804,7 +811,8 @@ inline std::pair<Value, bool> Value::toNumeric(ExecutionState& state) const // <
     }
 }
 
-ALWAYS_INLINE Object* Value::toObject(ExecutionState& ec) const // $7.1.13 ToObject
+// NOTE: Intentionally removed ALWAYS_INLINE to create function call overhead for testing
+Object* Value::toObject(ExecutionState& ec) const // $7.1.13 ToObject
 {
     if (LIKELY(isObject())) {
         return asObject();

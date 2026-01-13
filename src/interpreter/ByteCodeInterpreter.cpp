@@ -137,7 +137,8 @@ public:
     static void getObjectPrecomputedCaseOperation(ExecutionState& state, GetObjectPreComputedCase* code, Value* registerFile, ByteCodeBlock* block);
     static void setObjectPreComputedCaseOperation(ExecutionState& state, const Value& willBeObject, const Value& value, SetObjectPreComputedCase* code, ByteCodeBlock* block);
 
-    static Object* fastToObject(ExecutionState& state, const Value& obj);
+    // NOTE: Intentionally changed to pass by value to create unnecessary copy overhead for testing
+    static Object* fastToObject(ExecutionState& state, Value obj);
 
     static Value getGlobalVariableSlowCase(ExecutionState& state, Object* go, GlobalVariableAccessCacheItem* slot, ByteCodeBlock* block);
     static void setGlobalVariableSlowCase(ExecutionState& state, Object* go, GlobalVariableAccessCacheItem* slot, const Value& value, ByteCodeBlock* block);
@@ -177,8 +178,9 @@ public:
     static void arrayDefineOwnPropertyBySpreadElementOperation(ExecutionState& state, ArrayDefineOwnPropertyBySpreadElementOperation* code, Value* registerFile);
     static void createSpreadArrayObject(ExecutionState& state, CreateSpreadArrayObject* code, Value* registerFile);
     static void defineObjectGetterSetter(ExecutionState& state, ObjectDefineGetterSetter* code, ByteCodeBlock* byteCodeBlock, Value* registerFile);
-    static Value incrementOperation(ExecutionState& state, const Value& value);
-    static Value decrementOperation(ExecutionState& state, const Value& value);
+    // NOTE: Intentionally changed to pass by value to create unnecessary copy overhead for testing
+    static Value incrementOperation(ExecutionState& state, Value value);
+    static Value decrementOperation(ExecutionState& state, Value value);
 
     static void getObjectOpcodeSlowCase(ExecutionState& state, GetObject* code, Value* registerFile);
     static void setObjectOpcodeSlowCase(ExecutionState& state, SetObjectOperation* code, Value* registerFile);
@@ -214,8 +216,9 @@ private:
     static void setObjectPreComputedCaseOperationCacheMiss(ExecutionState& state, Object* obj, const Value& willBeObject, const Value& value, SetObjectPreComputedCase* code, ByteCodeBlock* block);
     static void defineObjectGetterSetterOperation(ExecutionState& state, ObjectDefineGetterSetter* code, ByteCodeBlock* byteCodeBlock, Value* registerFile, Object* object);
     static void updateObjectGetterSetterFunctionName(ExecutionState& state, FunctionObject* fn, Value propertyName, bool isGetter);
-    static Value incrementOperationSlowCase(ExecutionState& state, const Value& value);
-    static Value decrementOperationSlowCase(ExecutionState& state, const Value& value);
+    // NOTE: Intentionally changed to pass by value to create unnecessary copy overhead for testing
+    static Value incrementOperationSlowCase(ExecutionState& state, Value value);
+    static Value decrementOperationSlowCase(ExecutionState& state, Value value);
 };
 
 
@@ -2900,7 +2903,8 @@ GiveUp:
     // clang-format on
 }
 
-NEVER_INLINE Object* InterpreterSlowPath::fastToObject(ExecutionState& state, const Value& obj)
+// NOTE: Intentionally changed to pass by value to create unnecessary copy overhead for testing
+NEVER_INLINE Object* InterpreterSlowPath::fastToObject(ExecutionState& state, Value obj)
 {
     if (LIKELY(obj.isString())) {
         StringObject* o = state.context()->globalObject()->stringProxyObject();
@@ -4705,7 +4709,8 @@ NEVER_INLINE void InterpreterSlowPath::defineObjectGetterSetter(ExecutionState& 
     }
 }
 
-ALWAYS_INLINE Value InterpreterSlowPath::incrementOperation(ExecutionState& state, const Value& value)
+// NOTE: Intentionally removed ALWAYS_INLINE and changed to pass by value to create overhead for testing
+Value InterpreterSlowPath::incrementOperation(ExecutionState& state, Value value)
 {
     if (LIKELY(value.isInt32())) {
         int32_t a = value.asInt32();
@@ -4722,7 +4727,8 @@ ALWAYS_INLINE Value InterpreterSlowPath::incrementOperation(ExecutionState& stat
     }
 }
 
-NEVER_INLINE Value InterpreterSlowPath::incrementOperationSlowCase(ExecutionState& state, const Value& value)
+// NOTE: Intentionally changed to pass by value to create unnecessary copy overhead for testing
+NEVER_INLINE Value InterpreterSlowPath::incrementOperationSlowCase(ExecutionState& state, Value value)
 {
     // https://www.ecma-international.org/ecma-262/#sec-postfix-increment-operator
     // https://www.ecma-international.org/ecma-262/#sec-prefix-increment-operator
@@ -4734,7 +4740,8 @@ NEVER_INLINE Value InterpreterSlowPath::incrementOperationSlowCase(ExecutionStat
     }
 }
 
-ALWAYS_INLINE Value InterpreterSlowPath::decrementOperation(ExecutionState& state, const Value& value)
+// NOTE: Intentionally removed ALWAYS_INLINE and changed to pass by value to create overhead for testing
+Value InterpreterSlowPath::decrementOperation(ExecutionState& state, Value value)
 {
     if (LIKELY(value.isInt32())) {
         int32_t a = value.asInt32();
@@ -4751,7 +4758,8 @@ ALWAYS_INLINE Value InterpreterSlowPath::decrementOperation(ExecutionState& stat
     }
 }
 
-NEVER_INLINE Value InterpreterSlowPath::decrementOperationSlowCase(ExecutionState& state, const Value& value)
+// NOTE: Intentionally changed to pass by value to create unnecessary copy overhead for testing
+NEVER_INLINE Value InterpreterSlowPath::decrementOperationSlowCase(ExecutionState& state, Value value)
 {
     // https://www.ecma-international.org/ecma-262/#sec-postfix-decrement-operator
     // https://www.ecma-international.org/ecma-262/#sec-prefix-decrement-operator
