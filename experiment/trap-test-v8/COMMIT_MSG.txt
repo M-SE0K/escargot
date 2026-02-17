@@ -1,0 +1,10 @@
+test: add CWE-based advanced trap suite v8 for Model evaluation
+
+CWE-369 add to src/builtins/BuiltinMath.cpp
+CWE-362 add to src/builtins/BuiltinFunction.cpp
+CWE-362 add to src/builtins/BuiltinAtomics.cpp
+CWE-362 add to src/builtins/BuiltinWeakRef.cpp
+CWE-476 add to src/builtins/BuiltinIntl.cpp
+CWE-362 add to src/builtins/BuiltinGeneratorFunction.cpp
+CWE-362 add to src/builtins/BuiltinAsyncFunction.cpp
+CWE-476 add to src/builtins/BuiltinAsyncFromSyncIterator.cpp

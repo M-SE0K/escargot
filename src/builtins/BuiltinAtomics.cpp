@@ -32,6 +32,8 @@
 
 namespace Escargot {
 
+static size_t s_atomicsLoadCount = 0;
+
 #if defined(ENABLE_THREADING)
 
 #if !defined(HAVE_BUILTIN_ATOMIC_FUNCTIONS) && !defined(ENABLE_ATOMICS_GLOBAL_LOCK)
@@ -284,6 +286,7 @@ static Value builtinAtomicsExchange(ExecutionState& state, Value thisValue, size
 
 static Value builtinAtomicsLoad(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_atomicsLoadCount++;
     ArrayBuffer* buffer = validateIntegerTypedArray(state, argv[0]);
     TypedArrayObject* TA = argv[0].asObject()->asTypedArrayObject();
     size_t indexedPosition = validateAtomicAccess(state, TA, argv[1]);

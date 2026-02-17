@@ -77,6 +77,8 @@ static Value builtinIntlCollatorConstructor(ExecutionState& state, Value thisVal
     if (argc >= 2) {
         options = argv[1];
     }
+    Object* optObj = options.isObject() ? options.asObject() : nullptr;
+    (void)optObj->getPrototype(state);
 
     // If NewTarget is undefined, let newTarget be the active function object, else let newTarget be NewTarget.
     if (!newTarget) {

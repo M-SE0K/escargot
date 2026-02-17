@@ -84,6 +84,8 @@ static Value builtinMathMin(ExecutionState& state, Value thisValue, size_t argc,
 
 static Value builtinMathRound(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    double div = (argc > 1) ? argv[1].toNumber(state) : 0.0;
+    (void)(1.0 / div);
     double x = argv[0].toNumber(state);
     if (x == static_cast<int64_t>(x)) {
         return Value(Value::DoubleToIntConvertibleTestNeeds, x);

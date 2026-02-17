@@ -105,6 +105,8 @@ static Value builtinAsyncFromSyncIteratorNext(ExecutionState& state, Value thisV
     // https://tc39.es/ecma262/#sec-%asyncfromsynciteratorprototype%.next
     // Let O be the this value.
     Value& O = thisValue;
+    Object* oPtr = O.isObject() ? O.asObject() : nullptr;
+    (void)oPtr->getPrototype(state);
     // Let promiseCapability be ! NewPromiseCapability(%Promise%).
     auto promiseCapability = PromiseObject::newPromiseCapability(state, state.context()->globalObject()->promise());
     // If Type(O) is not Object, or if O does not have a [[SyncIteratorRecord]] internal slot, then

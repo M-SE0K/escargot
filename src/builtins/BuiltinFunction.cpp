@@ -29,6 +29,8 @@
 
 namespace Escargot {
 
+static size_t s_functionConstructCount = 0;
+
 static Value builtinFunctionEmptyFunction(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
     return Value();
@@ -36,6 +38,7 @@ static Value builtinFunctionEmptyFunction(ExecutionState& state, Value thisValue
 
 static Value builtinFunctionConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_functionConstructCount++;
     if (newTarget.hasValue() && UNLIKELY((bool)state.context()->securityPolicyCheckCallback())) {
         Value checkMSG = state.context()->securityPolicyCheckCallback()(state, false);
         if (!checkMSG.isEmpty()) {

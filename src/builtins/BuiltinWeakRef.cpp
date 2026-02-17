@@ -26,8 +26,11 @@
 
 namespace Escargot {
 
+static size_t s_weakRefConstructCount = 0;
+
 static Value builtinWeakRefConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_weakRefConstructCount++;
     if (!newTarget.hasValue()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, ErrorObject::Messages::GlobalObject_ConstructorRequiresNew);
         return Value();
