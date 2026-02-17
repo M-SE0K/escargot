@@ -27,8 +27,11 @@
 
 namespace Escargot {
 
+static size_t s_weakMapConstructCount = 0;
+
 static Value builtinWeakMapConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_weakMapConstructCount++;
     if (!newTarget.hasValue()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, ErrorObject::Messages::GlobalObject_ConstructorRequiresNew);
         return Value();

@@ -26,6 +26,8 @@
 
 namespace Escargot {
 
+static size_t s_finalizationRegistryConstructCount = 0;
+
 #define RESOLVE_THIS_BINDING_TO_FINALIZATIONREGISTRY(NAME, BUILT_IN_METHOD)                                                                                                                                                                                             \
     if (!thisValue.isObject() || !thisValue.asObject()->isFinalizationRegistryObject()) {                                                                                                                                                                               \
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, state.context()->staticStrings().FinalizationRegistry.string(), true, state.context()->staticStrings().BUILT_IN_METHOD.string(), ErrorObject::Messages::GlobalObject_CalledOnIncompatibleReceiver); \
@@ -34,6 +36,7 @@ namespace Escargot {
 
 static Value builtinFinalizationRegistryConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_finalizationRegistryConstructCount++;
     if (!newTarget.hasValue()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, ErrorObject::Messages::GlobalObject_ConstructorRequiresNew);
         return Value();

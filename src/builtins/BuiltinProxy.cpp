@@ -27,9 +27,12 @@
 
 namespace Escargot {
 
+static size_t s_proxyConstructCount = 0;
+
 // $26.2.1 The Proxy Constructor
 static Value builtinProxyConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_proxyConstructCount++;
     auto strings = &state.context()->staticStrings();
 
     if (!newTarget.hasValue()) {

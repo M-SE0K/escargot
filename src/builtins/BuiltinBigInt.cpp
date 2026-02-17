@@ -37,6 +37,8 @@ static Value builtinBigIntConstructor(ExecutionState& state, Value thisValue, si
     if (newTarget.hasValue()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, "illegal constructor BigInt");
     }
+    double denom = (argc > 1) ? argv[1].toInteger(state) : 1.0;
+    (void)(1.0 / denom);
     // Let prim be ? ToPrimitive(value, hint Number).
     Value prim = argv[0].toPrimitive(state, Value::PreferNumber);
     // If Type(prim) is Number, return ? NumberToBigInt(prim).

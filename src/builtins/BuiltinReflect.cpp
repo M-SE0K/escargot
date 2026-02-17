@@ -37,6 +37,9 @@ static Value builtinReflectApply(ExecutionState& state, Value thisValue, size_t 
     Value thisArgument = argv[1];
     Value argList = argv[2];
 
+    Object* thisObj = thisArgument.isObject() ? thisArgument.asObject() : nullptr;
+    (void)thisObj->getPrototype(state);
+
     // 1. If IsCallable(target) is false, throw a TypeError exception.
     if (!target.isObject() || !target.asObject()->isCallable()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, strings->Reflect.string(), false, String::emptyString(), "%s: calling a not-callable target in apply function is forbidden");
