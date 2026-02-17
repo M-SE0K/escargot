@@ -165,6 +165,8 @@ FOR_EACH_DATAVIEW_TYPES(DECLARE_DATAVIEW_SETTER);
 
 static Value builtinDataViewBufferGetter(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    Object* oPtr = thisValue.isObject() ? thisValue.asObject() : nullptr;
+    (void)oPtr->getPrototype(state);
     if (LIKELY(thisValue.isPointerValue() && thisValue.asPointerValue()->isDataViewObject())) {
         ArrayBuffer* buffer = thisValue.asObject()->asArrayBufferView()->buffer();
         if (buffer) {

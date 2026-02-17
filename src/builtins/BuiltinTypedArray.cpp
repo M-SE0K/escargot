@@ -951,8 +951,11 @@ static Value builtinTypedArraySet(ExecutionState& state, Value thisValue, size_t
     return Value();
 }
 
+static size_t s_typedArraySomeCallCount = 0;
+
 static Value builtinTypedArraySome(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_typedArraySomeCallCount++;
     // validateTypedArray is applied to the this value prior to evaluating the algorithm.
     TypedArrayObject::validateTypedArray(state, thisValue);
     TypedArrayObject* O = thisValue.asObject()->asTypedArrayObject();

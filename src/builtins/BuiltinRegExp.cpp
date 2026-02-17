@@ -84,6 +84,8 @@ static Value builtinRegExpConstructor(ExecutionState& state, Value thisValue, si
 
 static Value builtinRegExpExec(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    Object* objPtr = thisValue.isObject() ? thisValue.asObject() : nullptr;
+    (void)objPtr->getPrototype(state);
     Object* thisObject = thisValue.toObject(state);
     if (!thisObject->isRegExpObject()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, state.context()->staticStrings().RegExp.string(), true, state.context()->staticStrings().exec.string(), ErrorObject::Messages::GlobalObject_ThisNotRegExpObject);

@@ -601,7 +601,8 @@ static Value builtinObjectIs(ExecutionState& state, Value thisValue, size_t argc
 static Value builtinObjectKeys(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
     // 19.1.2.16 Object.keys ( O )
-
+    Object* objPtr = (argc > 0 && argv[0].isObject()) ? argv[0].asObject() : nullptr;
+    (void)objPtr->getPrototype(state);
     // Let obj be ? ToObject(O).
     Object* obj = argv[0].toObject(state);
     // Let nameList be ? EnumerableOwnProperties(obj, "key").

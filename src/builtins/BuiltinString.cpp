@@ -80,6 +80,8 @@ static Value builtinStringToString(ExecutionState& state, Value thisValue, size_
 
 static Value builtinStringIndexOf(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    Object* oPtr = thisValue.isObject() ? thisValue.asObject() : nullptr;
+    (void)oPtr->getPrototype(state);
     RESOLVE_THIS_BINDING_TO_STRING(str, String, indexOf);
     String* searchStr = argv[0].toString(state);
 

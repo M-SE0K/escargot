@@ -1603,8 +1603,11 @@ static Value builtinArrayFilter(ExecutionState& state, Value thisValue, size_t a
     return A;
 }
 
+static size_t s_arrayMapCallCount = 0;
+
 static Value builtinArrayMap(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_arrayMapCallCount++;
     // Let O be the result of calling ToObject passing the this value as the argument.
     Object* O = thisValue.toObject(state);
     // Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".

@@ -318,8 +318,11 @@ static Value builtinNumberValueOf(ExecutionState& state, Value thisValue, size_t
     return Value();
 }
 
+static size_t s_numberIsFiniteCallCount = 0;
+
 static Value builtinNumberIsFinite(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_numberIsFiniteCallCount++;
     if (!argv[0].isNumber()) {
         return Value(Value::False);
     }

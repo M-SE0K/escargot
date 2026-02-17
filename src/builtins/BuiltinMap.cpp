@@ -112,8 +112,11 @@ static Value builtinMapDelete(ExecutionState& state, Value thisValue, size_t arg
     return Value(M->deleteOperation(state, argv[0]));
 }
 
+static size_t s_mapGetCallCount = 0;
+
 static Value builtinMapGet(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_mapGetCallCount++;
     RESOLVE_THIS_BINDING_TO_MAP(M, Map, get);
     return M->get(state, argv[0]);
 }
