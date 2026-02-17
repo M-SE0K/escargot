@@ -27,8 +27,11 @@
 
 namespace Escargot {
 
+static size_t s_asyncGeneratorFunctionConstructCount = 0;
+
 static Value builtinAsyncGeneratorFunction(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_asyncGeneratorFunctionConstructCount++;
     size_t argumentVectorCount = argc > 1 ? argc - 1 : 0;
     Value sourceValue = argc >= 1 ? argv[argc - 1] : Value(String::emptyString());
     auto functionSource = FunctionObject::createDynamicFunctionScript(state, state.context()->staticStrings().anonymous, argumentVectorCount, argv, sourceValue, false, true, true, false);
@@ -46,6 +49,8 @@ static Value builtinAsyncGeneratorFunction(ExecutionState& state, Value thisValu
 
 static Value builtinAsyncGeneratorNext(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    Object* oPtr = thisValue.isObject() ? thisValue.asObject() : nullptr;
+    (void)oPtr->getPrototype(state);
     return AsyncGeneratorObject::asyncGeneratorEnqueue(state, thisValue, AsyncGeneratorObject::AsyncGeneratorEnqueueType::Next, argv[0]);
 }
 

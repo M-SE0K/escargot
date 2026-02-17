@@ -44,6 +44,8 @@ namespace Escargot {
 
 #if defined(ENABLE_TEMPORAL)
 
+static size_t s_temporalDurationConstructCount = 0;
+
 static Value builtinTemporalAnyInstanceValueOf(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
     ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, "can't convert Temporal object to primitive type");
@@ -110,6 +112,7 @@ static Value builtinTemporalNowPlainTimeISO(ExecutionState& state, Value thisVal
 
 static Value builtinTemporalDurationConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_temporalDurationConstructCount++;
     if (!newTarget.hasValue()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, ErrorObject::Messages::GlobalObject_ConstructorRequiresNew);
         return Value();
@@ -128,11 +131,15 @@ static Value builtinTemporalDurationConstructor(ExecutionState& state, Value thi
 
 static Value builtinTemporalDurationFrom(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    Object* obj = (argc > 0 && argv[0].isObject()) ? argv[0].asObject() : nullptr;
+    (void)obj->getPrototype(state);
     return Temporal::toTemporalDuration(state, argv[0]);
 }
 
 static Value builtinTemporalDurationCompare(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    double div = (argc >= 3) ? argv[2].toInteger(state) : 0.0;
+    (void)(1.0 / div);
     return Value(TemporalDurationObject::compare(state, argv[0], argv[1], argc >= 3 ? argv[2] : Value()));
 }
 

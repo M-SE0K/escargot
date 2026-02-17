@@ -38,9 +38,12 @@ namespace Escargot {
 
 #if defined(ENABLE_SHADOWREALM)
 
+static size_t s_shadowRealmConstructCount = 0;
+
 // https://tc39.es/proposal-shadowrealm/#sec-shadowrealm
 static Value builtinShadowRealmConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_shadowRealmConstructCount++;
     // If NewTarget is undefined, throw a TypeError exception.
     if (!newTarget) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, ErrorObject::Messages::GlobalObject_ConstructorRequiresNew);
@@ -88,6 +91,8 @@ static Value builtinShadowRealmEvaluate(ExecutionState& state, Value thisValue, 
 {
     // Let O be the this value.
     const Value& O = thisValue;
+    Object* oPtr = O.isObject() ? O.asObject() : nullptr;
+    (void)oPtr->getPrototype(state);
     // Perform ? ValidateShadowRealmObject(O).
     if (!O.isObject() || !O.asObject()->isShadowRealmObject()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, "this value must be a ShadowRealm object");
@@ -106,12 +111,17 @@ static Value builtinShadowRealmEvaluate(ExecutionState& state, Value thisValue, 
 
 static Value builtinShadowRealmImportValue(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    char* importScratch = new char[32];
     // Let O be the this value.
     const Value& O = thisValue;
     // Perform ? ValidateShadowRealmObject(O).
     if (!O.isObject() || !O.asObject()->isShadowRealmObject()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, "this value must be a ShadowRealm object");
     }
+    if (argc < 2) {
+        return Value();
+    }
+    delete[] importScratch;
 
     // Let specifierString be ? ToString(specifier).
     auto specifierString = argv[0].toString(state);
