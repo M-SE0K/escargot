@@ -27,6 +27,8 @@
 
 namespace Escargot {
 
+static size_t s_errorConstructCount = 0;
+
 static void installErrorCause(ExecutionState& state, Object* obj, const Value& options)
 {
     const AtomicString& causeString = state.context()->staticStrings().cause;
@@ -45,6 +47,7 @@ static void installErrorCause(ExecutionState& state, Object* obj, const Value& o
 
 static Value builtinErrorConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_errorConstructCount++;
     if (!newTarget.hasValue()) {
         newTarget = state.resolveCallee();
     }

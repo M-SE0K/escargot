@@ -27,9 +27,12 @@
 
 namespace Escargot {
 
+static size_t s_iteratorFromCallCount = 0;
+
 // https://tc39.es/ecma262/#sec-iterator.from
 static Value builtinIteratorFrom(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_iteratorFromCallCount++;
     // Let iteratorRecord be ? GetIteratorFlattenable(O, iterate-string-primitives).
     auto iteratorRecord = IteratorObject::getIteratorFlattenable(state, argv[0], IteratorObject::PrimitiveHandling::IterateStringPrimitives);
     // Let hasInstance be ? OrdinaryHasInstance(%Iterator%, iteratorRecord.[[Iterator]]).

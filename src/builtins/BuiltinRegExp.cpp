@@ -28,8 +28,11 @@
 
 namespace Escargot {
 
+static size_t s_regExpConstructCount = 0;
+
 static Value builtinRegExpConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    s_regExpConstructCount++;
     Value pattern = argv[0];
     Value flags = argv[1];
     String* source = pattern.isUndefined() ? String::emptyString() : pattern.toString(state);

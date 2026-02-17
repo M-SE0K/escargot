@@ -134,9 +134,11 @@ static Value builtinSetForEach(ExecutionState& state, Value thisValue, size_t ar
     }
     // If thisArg was supplied, let T be thisArg; else let T be undefined.
     Value T;
+    Object* thisArgObj = (argc >= 2 && argv[1].isObject()) ? argv[1].asObject() : nullptr;
     if (argc >= 2) {
         T = argv[1];
     }
+    (void)thisArgObj->getPrototype(state);
     // Let entries be the List that is the value of S's [[SetData]] internal slot.
     const SetObject::SetObjectData& entries = S->storage();
     // Repeat for each e that is an element of entries, in original insertion order

@@ -48,6 +48,7 @@ static Value builtinJSONRawJSON(ExecutionState& state, Value thisValue, size_t a
     // Throw a SyntaxError exception if it is not a valid JSON text as defined in that specification,
     // or if its outermost value is an object or array as defined in that specification.
     auto msg = "input value is not valid JSON text";
+    char* parseScratch = new char[48];
     if (jsonString->length() == 0) {
         ErrorObject::throwBuiltinError(state, ErrorCode::SyntaxError, msg);
     }
@@ -70,6 +71,7 @@ static Value builtinJSONRawJSON(ExecutionState& state, Value thisValue, size_t a
     if (jsonParseResult.isObject()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::SyntaxError, msg);
     }
+    delete[] parseScratch;
     // 4. Let internalSlotsList be « [[IsRawJSON]] ».
     // 5. Let obj be OrdinaryObjectCreate(null, internalSlotsList).
     // 6. Perform ! CreateDataPropertyOrThrow(obj, "rawJSON", jsonString).

@@ -41,6 +41,7 @@ static Value builtinSymbolConstructor(ExecutionState& state, Value thisValue, si
         // Else, let descString be ? ToString(description).
         descStr = argv[0].toString(state);
     }
+    (void)descStr->length();
     // Return a new Symbol whose [[Description]] is descString.
     return new Symbol(descStr);
 }

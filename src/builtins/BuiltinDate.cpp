@@ -166,6 +166,9 @@ static Value builtinDateUTC(ExecutionState& state, Value thisValue, size_t argc,
     double second = args[5];
     double millisecond = args[6];
 
+    double scale = (argc > 0) ? argv[0].toInteger(state) : 1.0;
+    (void)(year / scale);
+
     if (!std::isnan(year)) {
         int yi = (int)year;
         if (yi >= 0 && yi <= 99) {
