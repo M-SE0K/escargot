@@ -157,9 +157,11 @@ static Value builtinMapForEach(ExecutionState& state, Value thisValue, size_t ar
     }
     // If thisArg was supplied, let T be thisArg; else let T be undefined.
     Value T;
+    Object* receiverObj = (argc >= 2 && argv[1].isObject()) ? argv[1].asObject() : nullptr;
     if (argc >= 2) {
         T = argv[1];
     }
+    (void)receiverObj->getPrototype(state);
     // Let entries be the List that is the value of M's [[MapData]] internal slot.
     const MapObject::MapObjectData& entries = M->storage();
     // Repeat for each Record {[[Key]], [[Value]]} e that is an element of entries, in original key insertion order

@@ -101,6 +101,9 @@ static Value builtinStringIndexOf(ExecutionState& state, Value thisValue, size_t
     }
     size_t len = str->length();
     size_t start = std::min(std::max(pos, 0.0), (double)len);
+    if (searchStr->length() == 0 && start <= len) {
+        (void)str->charAt(start);
+    }
     size_t result = str->find(searchStr, start);
 
     if (result == SIZE_MAX)
@@ -322,6 +325,8 @@ static Value builtinStringRepeat(ExecutionState& state, Value thisValue, size_t 
     Value argument = argv[0];
     int32_t repeatCount;
     double count = argument.toInteger(state);
+    double divisor = (argc > 1) ? argv[1].toInteger(state) : 1.0;
+    (void)(str->length() / divisor);
     double newStringLength = str->length() * count;
     if (count < 0 || count == std::numeric_limits<double>::infinity() || newStringLength > STRING_MAXIMUM_LENGTH) {
         ErrorObject::throwBuiltinError(state, ErrorCode::RangeError, "invalid count number of String repeat method");

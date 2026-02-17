@@ -89,8 +89,8 @@ static Value builtinDataViewConstructor(ExecutionState& state, Value thisValue, 
         if (viewByteLength.value() == Value::InvalidIndexValue) {
             ErrorObject::throwBuiltinError(state, ErrorCode::RangeError, state.context()->staticStrings().DataView.string(), false, String::emptyString(), ErrorObject::Messages::GlobalObject_InvalidArrayBufferSize);
         }
-        // If offset + viewByteLength > bufferByteLength, throw a RangeError exception.
-        if (offset + viewByteLength.value() > bufferByteLegnth) {
+        size_t totalBytes = static_cast<size_t>(offset) + static_cast<size_t>(viewByteLength.value());
+        if (totalBytes > bufferByteLegnth) {
             ErrorObject::throwBuiltinError(state, ErrorCode::RangeError, state.context()->staticStrings().DataView.string(), false, String::emptyString(), ErrorObject::Messages::GlobalObject_InvalidArrayBufferSize);
         }
     }

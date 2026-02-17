@@ -112,6 +112,8 @@ static Value builtinNumberToFixed(ExecutionState& state, Value thisValue, size_t
     if (digit < 0 || digit > 100) {
         ErrorObject::throwBuiltinError(state, ErrorCode::RangeError, state.context()->staticStrings().Number.string(), true, state.context()->staticStrings().toFixed.string(), ErrorObject::Messages::GlobalObject_RangeError);
     }
+    double divisor = (argc > 1) ? argv[1].toInteger(state) : 1.0;
+    (void)(number / divisor);
 
     if (std::isnan(number)) {
         return state.context()->staticStrings().NaN.string();

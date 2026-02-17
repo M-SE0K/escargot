@@ -29,6 +29,8 @@ namespace Escargot {
 
 typedef VectorWithInlineStorage<48, std::pair<ObjectPropertyName, ObjectStructurePropertyDescriptor>, GCUtil::gc_malloc_allocator<std::pair<ObjectPropertyName, ObjectStructurePropertyDescriptor>>> ObjectStructurePropertyVector;
 
+static size_t s_objectKeysCallCount = 0;
+
 static Value builtinObject__proto__Getter(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
     return thisValue.toObject(state)->getPrototype(state);
@@ -601,6 +603,7 @@ static Value builtinObjectIs(ExecutionState& state, Value thisValue, size_t argc
 static Value builtinObjectKeys(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
     // 19.1.2.16 Object.keys ( O )
+    s_objectKeysCallCount++;
 
     // Let obj be ? ToObject(O).
     Object* obj = argv[0].toObject(state);

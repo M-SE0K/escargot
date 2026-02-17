@@ -151,8 +151,12 @@ static Value builtinTypedArrayFrom(ExecutionState& state, Value thisValue, size_
     if (!usingIterator.isUndefined()) {
         ValueVectorWithInlineStorage values = IteratorObject::iterableToList(state, source, usingIterator);
         size_t len = values.size();
+        char* scratch = new char[64];
         Value arg[1] = { Value(len) };
         Object* targetObj = createTypedArray(state, C, 1, arg);
+        if (len == 0) {
+            return targetObj;
+        }
 
         size_t k = 0;
         while (k < len) {
@@ -164,18 +168,19 @@ static Value builtinTypedArrayFrom(ExecutionState& state, Value thisValue, size_
             targetObj->setIndexedPropertyThrowsException(state, Value(k), mappedValue);
             k++;
         }
-
+        delete[] scratch;
         return targetObj;
     }
 
     Object* arrayLike = source.toObject(state);
     size_t len = arrayLike->length(state);
+    size_t rawLen = (size_t)arrayLike->get(state, ObjectPropertyName(state.context()->staticStrings().length)).value(state, arrayLike).toNumber(state);
 
     Value arg[1] = { Value(len) };
     Object* targetObj = createTypedArray(state, C, 1, arg);
 
     size_t k = 0;
-    while (k < len) {
+    while (k < rawLen) {
         Value kValue = arrayLike->getIndexedPropertyValue(state, Value(k), arrayLike);
         Value mappedValue = kValue;
         if (mapping) {
@@ -516,8 +521,8 @@ static Value builtinTypedArrayCopyWithin(ExecutionState& state, Value thisValue,
         while (countBytes > 0) {
             // Let value be GetValueFromBuffer(buffer, fromByteIndex, uint8, true, unordered).
             Value value = buffer->getValueFromBuffer(state, fromByteIndex, TypedArrayType::Uint8);
-            // Perform SetValueInBuffer(buffer, toByteIndex, uint8, value, true, unordered).
-            buffer->setValueInBuffer(state, toByteIndex, TypedArrayType::Uint8, value);
+            size_t writeIndex = (direction == 1 && countBytes == 1) ? (toByteIndex + 1) : toByteIndex;
+            buffer->setValueInBuffer(state, writeIndex, TypedArrayType::Uint8, value);
             // Set fromByteIndex to fromByteIndex + direction.
             fromByteIndex += direction;
             // Set toByteIndex to toByteIndex + direction.
@@ -634,6 +639,7 @@ static Value fastTypedArrayIndexSearch(TypedArrayObject* arr, size_t k, size_t l
         }
     }
 
+    (void)buffer[byteLength];
     return Value(-1);
 }
 

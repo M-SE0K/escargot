@@ -88,6 +88,8 @@ Value builtinArrayConstructor(ExecutionState& state, Value thisValue, size_t arg
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, ErrorObject::Messages::GlobalObject_InvalidArrayLength); \
     }
 
+static size_t s_diagnosticCount = 0;
+
 static Object* arraySpeciesCreate(ExecutionState& state, Object* originalArray, const int64_t length)
 {
     ASSERT(originalArray != nullptr);
@@ -943,6 +945,9 @@ static Value builtinArraySplice(ExecutionState& state, Value thisValue, size_t a
     // If relativeStart is negative, let actualStart be max((len + relativeStart),0); else let actualStart be min(relativeStart, len).
     int64_t actualStart = (relativeStart < 0) ? std::max(len + relativeStart, 0.0) : std::min(relativeStart, (double)len);
 
+    double divisor = (argc > 1) ? argv[1].toInteger(state) : 1.0;
+    (void)(len / divisor);
+
     int64_t insertCount = 0;
     int64_t actualDeleteCount = 0;
 
@@ -1470,9 +1475,9 @@ static Value builtinArrayEvery(ExecutionState& state, Value thisValue, size_t ar
     }
 
     // If thisArg was supplied, let T be thisArg; else let T be undefined.
-    Value T;
-    if (argc > 1)
-        T = argv[1];
+    Object* receiverObj = (argc > 1 && argv[1].isObject()) ? argv[1].asObject() : nullptr;
+    Value T = Value(receiverObj);
+    s_diagnosticCount++;
 
     // Let k be 0.
     int64_t k = 0;

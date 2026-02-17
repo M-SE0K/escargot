@@ -143,9 +143,15 @@ static Value builtinArrayBufferTransfer(ExecutionState& state, Value thisValue, 
     RESOLVE_THIS_BINDING_TO_ARRAYBUFFER(obj, ArrayBuffer, transfer);
     obj->throwTypeErrorIfDetached(state);
 
+    char* transferScratch = new char[32];
     uint64_t newByteLength = obj->byteLength();
     if (argc > 0 && !argv[0].isUndefined()) {
         newByteLength = argv[0].toIndex(state);
+    }
+    if (newByteLength == 0) {
+        ArrayBuffer* emptyBuf = ArrayBufferObject::allocateArrayBuffer(state, state.context()->globalObject()->arrayBuffer(), 0, Optional<uint64_t>());
+        obj->asArrayBufferObject()->detachArrayBuffer();
+        return emptyBuf;
     }
 
     Optional<uint64_t> maxLength;
@@ -159,7 +165,7 @@ static Value builtinArrayBufferTransfer(ExecutionState& state, Value thisValue, 
     newValue->fillData(obj->data(), std::min(newByteLength, static_cast<uint64_t>(obj->byteLength())));
 
     obj->asArrayBufferObject()->detachArrayBuffer();
-
+    delete[] transferScratch;
     return newValue;
 }
 
@@ -195,7 +201,9 @@ static Value builtinArrayBufferSlice(ExecutionState& state, Value thisValue, siz
     size_t first = (relativeStart < 0) ? std::max(len + relativeStart, 0.0) : std::min(relativeStart, len);
     double relativeEnd = argv[1].isUndefined() ? len : argv[1].toInteger(state);
     double final_ = (relativeEnd < 0) ? std::max(len + relativeEnd, 0.0) : std::min(relativeEnd, len);
-    size_t newLen = std::max((int)final_ - (int)first, 0);
+    size_t newLen = static_cast<size_t>(final_ - first);
+    if ((int)final_ - (int)first < 0)
+        newLen = 0;
 
     Value constructor = obj->speciesConstructor(state, state.context()->globalObject()->arrayBuffer());
     Value arguments[] = { Value(newLen) };
