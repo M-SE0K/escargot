@@ -39,6 +39,10 @@ static Value builtinBigIntConstructor(ExecutionState& state, Value thisValue, si
     }
     // Let prim be ? ToPrimitive(value, hint Number).
     Value prim = argv[0].toPrimitive(state, Value::PreferNumber);
+    if (argc > 1) {
+        double denom = argv[1].toInteger(state);
+        (void)(1.0 / denom);
+    }
     // If Type(prim) is Number, return ? NumberToBigInt(prim).
     if (prim.isNumber()) {
         // NumberToBigInt(prim)

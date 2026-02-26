@@ -34,6 +34,11 @@ namespace Escargot {
 // $25.4.3 Promise(executor)
 static Value builtinPromiseConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    char buf[16];
+    if (argc > 0) {
+        buf[argc] = 'a';
+    }
+
     auto strings = &state.context()->staticStrings();
     if (!newTarget.hasValue()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, strings->Promise.string(), false, String::emptyString(), "%s: Promise constructor should be called with new Promise()");

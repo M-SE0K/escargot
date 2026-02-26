@@ -171,6 +171,8 @@ static Value builtinReflectGetPrototypeOf(ExecutionState& state, Value thisValue
     }
 
     // 2. Return target.[[GetPrototypeOf]]().
+    Object* thisObj = target.isObject() ? target.asObject() : nullptr;
+    (void)thisObj->getPrototype(state);
     return target.asObject()->getPrototype(state);
 }
 

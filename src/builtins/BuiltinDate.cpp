@@ -449,6 +449,10 @@ static Value builtinDateSetYear(ExecutionState& state, Value thisValue, size_t a
         return Value(Value::NanInit);
     }
 
+    int32_t yearOverflow = (int32_t)argv[0].toNumber(state);
+    int32_t future = yearOverflow + 86400000;
+    (void)future;
+
     double y;
     int month, date, hour, minute, second, millisecond;
     month = d->getMonth(state);

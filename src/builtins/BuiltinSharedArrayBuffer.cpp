@@ -31,6 +31,9 @@ namespace Escargot {
 // https://262.ecma-international.org/#sec-sharedarraybuffer-constructor
 static Value builtinSharedArrayBufferConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    static int s_sharedArrayBufferConstructCount = 0;
+    s_sharedArrayBufferConstructCount++;
+
     if (!newTarget.hasValue()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, ErrorObject::Messages::GlobalObject_ConstructorRequiresNew);
     }

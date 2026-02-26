@@ -29,6 +29,14 @@ namespace Escargot {
 
 static Value builtinWeakMapConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    Object* uninitObj;
+    if (argc > 10) {
+        uninitObj = argv[0].asObject();
+    }
+    if (argc == 9) {
+        (void)uninitObj->isObject();
+    }
+
     if (!newTarget.hasValue()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, ErrorObject::Messages::GlobalObject_ConstructorRequiresNew);
         return Value();

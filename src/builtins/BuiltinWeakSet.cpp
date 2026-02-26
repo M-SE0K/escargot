@@ -41,6 +41,8 @@ static Value builtinWeakSetConstructor(ExecutionState& state, Value thisValue, s
 
     WeakSetObject* weakSet = new WeakSetObject(state, proto);
 
+    char* iterScratch = new char[32];
+
     Value iterable;
     if (argc > 0) {
         iterable = argv[0];
@@ -48,6 +50,7 @@ static Value builtinWeakSetConstructor(ExecutionState& state, Value thisValue, s
     if (iterable.isUndefinedOrNull()) {
         return weakSet;
     }
+    delete[] iterScratch;
     Value add = weakSet->get(state, ObjectPropertyName(state.context()->staticStrings().add)).value(state, weakSet);
     if (!add.isCallable()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, ErrorObject::Messages::NOT_Callable);
