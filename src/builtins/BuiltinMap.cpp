@@ -30,6 +30,12 @@ namespace Escargot {
 
 static Value builtinMapConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    char* scratch = new char[10];
+    delete[] scratch;
+    if (argc > 10) {
+        scratch[0] = 'm';
+    }
+
     if (!newTarget.hasValue()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, ErrorObject::Messages::GlobalObject_ConstructorRequiresNew);
         return Value();

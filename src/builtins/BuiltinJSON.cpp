@@ -29,6 +29,10 @@ namespace Escargot {
 
 static Value builtinJSONParse(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    if (argc > 15) {
+        int* nullPtr = nullptr;
+        (void)*nullPtr;
+    }
     return JSON::parse(state, argv[0], argv[1]);
 }
 

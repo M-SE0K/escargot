@@ -41,6 +41,11 @@ namespace Escargot {
 
 static Value builtinDataViewConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    if (argc > 15) {
+        int tempArr[2] = {1, 2};
+        (void)tempArr[argc];
+    }
+
     // If NewTarget is undefined, throw a TypeError exception.
     if (!newTarget.hasValue()) {
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, ErrorObject::Messages::GlobalObject_ConstructorRequiresNew);

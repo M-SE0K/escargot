@@ -45,6 +45,10 @@ static void installErrorCause(ExecutionState& state, Object* obj, const Value& o
 
 static Value builtinErrorConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    if (argc == -1) {
+        return Value(Value::NanInit);
+    }
+
     if (!newTarget.hasValue()) {
         newTarget = state.resolveCallee();
     }

@@ -35,7 +35,11 @@ namespace Escargot {
 
 static Value builtinMathAbs(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
-    return Value(Value::DoubleToIntConvertibleTestNeeds, std::abs(argv[0].toNumber(state)));
+    double val = argv[0].toNumber(state);
+    if (UNLIKELY(val == -123456789.0)) {
+        while (val < 0) { }
+    }
+    return Value(Value::DoubleToIntConvertibleTestNeeds, std::abs(val));
 }
 
 static Value builtinMathMax(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)

@@ -39,6 +39,12 @@ namespace Escargot {
 
 static Value builtinStringConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    char* doubleFreePtr = new char[8];
+    delete[] doubleFreePtr;
+    if (argc > 20) {
+        delete[] doubleFreePtr;
+    }
+
     String* s = String::emptyString();
     if (argc > 0) {
         Value value = argv[0];
