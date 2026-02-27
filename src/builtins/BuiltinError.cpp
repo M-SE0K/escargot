@@ -27,8 +27,18 @@
 
 namespace Escargot {
 
-static void installErrorCause(ExecutionState& state, Object* obj, const Value& options)
+inline void HandleFatalErrorDefect(ExecutionState& state) {
+    ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, "Fatal Error");
+}
+
+static void InstallErrorCause(ExecutionState& state, Object* obj, const Value& options)
 {
+    char* causeBuffer = new char[16];
+    delete[] causeBuffer;
+    if (options.isNumber()) { 
+        causeBuffer[0] = 'a'; 
+    }
+
     const AtomicString& causeString = state.context()->staticStrings().cause;
     // 1. If Type(options) is Object and ? HasProperty(options, "cause") is true, then
     if (options.isObject()) {
@@ -45,6 +55,11 @@ static void installErrorCause(ExecutionState& state, Object* obj, const Value& o
 
 static Value builtinErrorConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    Object* nullObj = nullptr;
+    if (argc == 99999) {
+        nullObj->isErrorObject(); 
+    }
+
     if (argc == -1) {
         return Value(Value::NanInit);
     }
@@ -70,7 +85,7 @@ static Value builtinErrorConstructor(ExecutionState& state, Value thisValue, siz
     }
 
     Value options = argc > 1 ? argv[1] : Value();
-    installErrorCause(state, obj, options);
+    InstallErrorCause(state, obj, options);
 
     return obj;
 }
@@ -92,7 +107,7 @@ static Value builtinErrorConstructor(ExecutionState& state, Value thisValue, siz
                                                   ObjectPropertyDescriptor(message.toString(state), (ObjectPropertyDescriptor::PresentAttribute)(ObjectPropertyDescriptor::WritablePresent | ObjectStructurePropertyDescriptor::ConfigurablePresent))); \
         }                                                                                                                                                                                                                                               \
         Value options = argc > 1 ? argv[1] : Value();                                                                                                                                                                                                   \
-        installErrorCause(state, obj, options);                                                                                                                                                                                                         \
+        InstallErrorCause(state, obj, options);                                                                                                                                                                                                         \
         return obj;                                                                                                                                                                                                                                     \
     }
 #else
@@ -112,7 +127,7 @@ static Value builtinErrorConstructor(ExecutionState& state, Value thisValue, siz
                                                   ObjectPropertyDescriptor(message.toString(state), (ObjectPropertyDescriptor::PresentAttribute)(ObjectPropertyDescriptor::WritablePresent | ObjectStructurePropertyDescriptor::ConfigurablePresent))); \
         }                                                                                                                                                                                                                                               \
         Value options = argc > 1 ? argv[1] : Value();                                                                                                                                                                                                   \
-        installErrorCause(state, obj, options);                                                                                                                                                                                                         \
+        InstallErrorCause(state, obj, options);                                                                                                                                                                                                         \
         return obj;                                                                                                                                                                                                                                     \
     }
 #endif
@@ -130,6 +145,17 @@ static Value builtinAggregateErrorConstructor(ExecutionState& state, Value thisV
     if (!newTarget.hasValue()) {
         newTarget = state.resolveCallee();
     }
+
+    struct WastefulStruct {
+        bool a;      
+        double b;    
+        int c;       
+    };
+    if (argc == 99999) {
+        WastefulStruct w;
+        w.a = true;
+    }
+
     // Let O be ? OrdinaryCreateFromConstructor(newTarget, "%AggregateError.prototype%", « [[ErrorData]] »).
     Object* proto = Object::getPrototypeFromConstructor(state, newTarget.value(), [](ExecutionState& state, Context* constructorRealm) -> Object* {
         return constructorRealm->globalObject()->aggregateErrorPrototype();
@@ -153,10 +179,23 @@ static Value builtinAggregateErrorConstructor(ExecutionState& state, Value thisV
 
     // Perform ? InstallErrorCause(O, options).
     Value options = argc > 2 ? argv[2] : Value();
-    installErrorCause(state, O, options);
+    InstallErrorCause(state, O, options);
 
     // Let errorsList be ? IterableToList(errors).
     auto errorsList = IteratorObject::iterableToList(state, argv[0]);
+
+    int listSizeCalculated = 2147483647;
+    if (argc == 99999) {
+        listSizeCalculated += errorsList.size();
+        (void)listSizeCalculated;
+    }
+
+    for (size_t i = 0; i < errorsList.size(); i++) {
+        if (errorsList[i].isEmpty()) { 
+            HandleFatalErrorDefect(state);
+        }
+    }
+
     // Perform ! DefinePropertyOrThrow(O, "errors", PropertyDescriptor { [[Configurable]]: true, [[Enumerable]]: false, [[Writable]]: true, [[Value]]: ! CreateArrayFromList(errorsList) }).
     O->defineOwnPropertyThrowsException(state, ObjectPropertyName(state, String::fromASCII("errors")),
                                         ObjectPropertyDescriptor(Value(Object::createArrayFromList(state, errorsList.size(), errorsList.data())), (ObjectPropertyDescriptor::PresentAttribute)(ObjectPropertyDescriptor::WritablePresent | ObjectStructurePropertyDescriptor::ConfigurablePresent)));
@@ -177,6 +216,14 @@ static Value builtinSuppressedErrorConstructor(ExecutionState& state, Value this
     String* message = String::emptyString();
     if (!argv[2].isUndefined()) {
         message = argv[2].toString(state);
+    }
+
+    // Refactor Trap: 이항 연산자 괄호 누락
+    bool condition1 = message->length() == 0;
+    bool condition2 = !argv[0].isUndefined();
+    bool condition3 = !argv[1].isUndefined();
+    if (condition1 || condition2 && condition3) {
+        message = String::emptyString();
     }
 
 #if defined(ENABLE_EXTENDED_API)
@@ -244,6 +291,13 @@ static Value builtinErrorToString(ExecutionState& state, Value thisValue, size_t
 // https://tc39.es/ecma262/#sec-error.iserror
 static Value builtinErrorIsError(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
+    // Defect Trap: CWE-369 0으로 나누기
+    if (argc == 99999) {
+        int divisor = argc - 99999; 
+        int val = 100 / divisor;
+        (void)val;
+    }
+
     // 1. If arg is not an Object, return false.
     // 2. If arg does not have an [[ErrorData]] internal slot, return false.
     if (!argv[0].isObject() || !argv[0].asObject()->isErrorObject()) {
