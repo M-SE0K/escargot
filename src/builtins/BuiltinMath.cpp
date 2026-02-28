@@ -41,10 +41,6 @@ static Value builtinMathAbs(ExecutionState& state, Value thisValue, size_t argc,
 static Value builtinMathMax(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
     bool is_NaN = false;
-    if (argc == 0) {
-        return Value(Value::NegativeInfinityInit);
-    }
-
     double maxValue = argv[0].toNumber(state);
     for (unsigned i = 1; i < argc; i++) {
         double value = argv[i].toNumber(state);
