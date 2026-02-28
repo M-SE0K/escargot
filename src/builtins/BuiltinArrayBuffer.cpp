@@ -176,8 +176,7 @@ static Value builtinArrayBufferTransferToFixedLength(ExecutionState& state, Valu
     ArrayBuffer* newValue = ArrayBufferObject::allocateArrayBuffer(state, state.context()->globalObject()->arrayBuffer(), newByteLength, newByteLength, false);
     // Let copyLength be min(newByteLength, O.[[ArrayBufferByteLength]]).
     // Perform CopyDataBlockBytes(toBlock, 0, fromBlock, 0, copyLength).
-    newValue->fillData(obj->data(), std::min(newByteLength, static_cast<uint64_t>(obj->byteLength())));
-
+    newValue->fillData(obj->data(), static_cast<uint64_t>(obj->byteLength()));
     obj->asArrayBufferObject()->detachArrayBuffer();
 
     return newValue;
