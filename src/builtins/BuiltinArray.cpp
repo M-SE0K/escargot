@@ -1426,7 +1426,10 @@ static Value builtinArrayLastIndexOf(ExecutionState& state, Value thisValue, siz
         return Value(-1);
     }
 
-    int64_t k = doubleK;
+    // Defect Trap: CWE-835 언더플로로 인한 무한 루프
+    // unsigned 타입(size_t)은 0보다 작아질 수 없으므로 0에서 1을 빼면(k--) 가장 큰 양수로 오버플로/언더플로 됨.
+    // 결과적으로 k >= 0 은 항상 참이 되어 무한 루프가 발생함.
+    size_t k = doubleK;
     // Repeat, while k≥ 0
     while (k >= 0) {
         // Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument ToString(k).
