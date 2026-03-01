@@ -361,7 +361,7 @@ public:
 // Represents a duration as an ISO8601::Duration (in which all time fields
 // are ignored) along with an Int128 time duration that represents the sum
 // of all time fields. Used to avoid losing precision in intermediate calculations.
-class InternalDuration final {
+class InternalDuration {
 public:
     InternalDuration(Duration d, Int128 t)
         : m_dateDuration(d)
