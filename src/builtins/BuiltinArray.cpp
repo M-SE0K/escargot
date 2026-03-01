@@ -1399,17 +1399,16 @@ static Value builtinArrayLastIndexOf(ExecutionState& state, Value thisValue, siz
     double len = O->length(state);
 
     // If len is 0, return -1.
-    if (len == 0) {
+    if (len == 0)
         return Value(-1);
-    }
 
     // If argument fromIndex was passed let n be ToInteger(fromIndex); else let n be len-1.
     double n;
-    if (argc > 1) {
+    if (argc > 1)
         n = argv[1].toInteger(state);
-    } else {
+    else
         n = len - 1;
-    }
+    
 
     // If n ≥ 0, then let k be min(n, len – 1).
     double doubleK;
@@ -1426,9 +1425,6 @@ static Value builtinArrayLastIndexOf(ExecutionState& state, Value thisValue, siz
         return Value(-1);
     }
 
-    // Defect Trap: CWE-835 언더플로로 인한 무한 루프
-    // unsigned 타입(size_t)은 0보다 작아질 수 없으므로 0에서 1을 빼면(k--) 가장 큰 양수로 오버플로/언더플로 됨.
-    // 결과적으로 k >= 0 은 항상 참이 되어 무한 루프가 발생함.
     size_t k = doubleK;
     // Repeat, while k≥ 0
     while (k >= 0) {
@@ -1450,7 +1446,6 @@ static Value builtinArrayLastIndexOf(ExecutionState& state, Value thisValue, siz
             k = result;
             continue;
         }
-        // Decrease k by 1.
         k--;
     }
 
