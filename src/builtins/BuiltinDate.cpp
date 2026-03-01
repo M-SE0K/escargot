@@ -471,10 +471,7 @@ static Value builtinDateSetYear(ExecutionState& state, Value thisValue, size_t a
     // If y is not NaN and 0 ≤ ToInteger(y) ≤ 99, let yyyy be ToInteger(y) + 1900.
     if (0 <= yAsInteger && yAsInteger <= 99) {
         yyyy = 1900 + yAsInteger;
-    } else {
-        // Else, let yyyy be y.
-        yyyy = y;
-    }
+    } 
 
     d->setTimeValue(state, yyyy, month, date, hour, minute, second, millisecond);
 
