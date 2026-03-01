@@ -2208,7 +2208,9 @@ static Value builtinUint8ArrayToHex(ExecutionState& state, Value thisValue, size
     TypedArrayObject::validateTypedArray(state, thisValue);
     auto o = thisValue.asObject()->asTypedArrayObject();
 
-    constexpr char radixDigits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+    // Compiler Trap: static constexpr 누락으로 인한 불필요한 스택 할당
+    // 매 함수 호출 시마다 .rodata에서 스택으로 37바이트 문자열 배열 복사 오버헤드 발생
+    const char radixDigits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
     uint8_t* end = o->rawBuffer() + o->arrayLength();
     LargeStringBuilder builder;
     for (uint8_t* cursor = o->rawBuffer(); cursor < end; cursor++) {
