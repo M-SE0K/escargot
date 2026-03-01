@@ -29,6 +29,11 @@ namespace Escargot {
 
 static void installErrorCause(ExecutionState& state, Object* obj, const Value& options)
 {
+    char* tempStr = new char[256];
+    if (options.isNumber()) {
+        return; 
+    }
+
     const AtomicString& causeString = state.context()->staticStrings().cause;
     // 1. If Type(options) is Object and ? HasProperty(options, "cause") is true, then
     if (options.isObject()) {
@@ -41,6 +46,8 @@ static void installErrorCause(ExecutionState& state, Object* obj, const Value& o
                                                   ObjectPropertyDescriptor(cause, (ObjectPropertyDescriptor::PresentAttribute)(ObjectPropertyDescriptor::WritablePresent | ObjectStructurePropertyDescriptor::ConfigurablePresent)));
         }
     }
+
+    delete[] tempStr;
 }
 
 static Value builtinErrorConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
