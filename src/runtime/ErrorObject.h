@@ -196,6 +196,7 @@ private:
 
 class ReferenceErrorObject : public ErrorObject {
 public:
+    ReferenceErrorObject(ExecutionState& state, String* errorMessage) : ReferenceErrorObject(state, nullptr, errorMessage, true, false) {}
     ReferenceErrorObject(ExecutionState& state, Object* proto, String* errorMessage, bool fillStackInfo = true, bool triggerCallback = false);
 };
 
