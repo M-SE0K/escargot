@@ -68,161 +68,161 @@ struct ByteCodeRelocInfo {
 };
 
 class CacheStringTable {
-public:
-    CacheStringTable()
-        : m_has16BitString(false)
-        , m_maxLength(0)
-    {
-    }
+    public:
+        CacheStringTable()
+            : m_has16BitString(false)
+            , m_maxLength(0)
+        {
+        }
 
-    ~CacheStringTable()
-    {
-        m_table.clear();
-    }
+        ~CacheStringTable()
+        {
+            m_table.clear();
+        }
 
-    Vector<AtomicString, std::allocator<AtomicString>>& table()
-    {
-        return m_table;
-    }
+        Vector<AtomicString, std::allocator<AtomicString>>& table()
+        {
+            return m_table;
+        }
 
-    bool has16BitString() const { return m_has16BitString; }
-    size_t maxLength() const { return m_maxLength; }
-    size_t add(const AtomicString& string);
-    void initAdd(const AtomicString& string);
-    AtomicString& get(size_t index);
+        bool has16BitString() const { return m_has16BitString; }
+        size_t maxLength() const { return m_maxLength; }
+        size_t add(const AtomicString& string);
+        void initAdd(const AtomicString& string);
+        AtomicString& get(size_t index);
 
-private:
-    bool m_has16BitString;
-    size_t m_maxLength;
-    Vector<AtomicString, std::allocator<AtomicString>> m_table;
+    private:
+        bool m_has16BitString;
+        size_t m_maxLength;
+        Vector<AtomicString, std::allocator<AtomicString>> m_table;
 };
 
 class CodeCacheWriter {
-public:
-    class CacheBuffer {
     public:
-        CacheBuffer()
-            : m_buffer(nullptr)
-            , m_capacity(0)
-            , m_index(0)
+        class CacheBuffer {
+            public:
+                CacheBuffer()
+                    : m_buffer(nullptr)
+                    , m_capacity(0)
+                    , m_index(0)
+                {
+                }
+
+                ~CacheBuffer()
+                {
+                    reset();
+                }
+
+                char* data() const { return m_buffer; }
+                size_t size() const { return m_index; }
+                inline bool isAvailable(size_t size) const
+                {
+                    return m_index + size <= m_capacity;
+                }
+
+                void ensureSize(size_t size);
+                void reset();
+
+                template <typename IntegralType>
+                void put(IntegralType value)
+                {
+                    ASSERT(isAvailable(sizeof(IntegralType)));
+                    memcpy(m_buffer + m_index, &value, sizeof(IntegralType));
+                    m_index += sizeof(IntegralType);
+                }
+
+                template <typename IntegralType>
+                void putData(IntegralType* data, size_t size)
+                {
+                    ensureSize(sizeof(size_t) + size * sizeof(IntegralType));
+                    put(size);
+                    if (UNLIKELY(!size)) {
+                        return;
+                    }
+                    memcpy(m_buffer + m_index, data, size * sizeof(IntegralType));
+                    m_index += (size * sizeof(IntegralType));
+                }
+
+                void putString(String* string)
+                {
+                    ASSERT(string->length());
+                    bool is8Bit = string->has8BitContent();
+                    ensureSize(sizeof(bool));
+                    put(is8Bit);
+                    if (LIKELY(is8Bit)) {
+                        putData(string->characters8(), string->length());
+                    } else {
+                        putData(string->characters16(), string->length());
+                    }
+                }
+
+                void putBF(bf_t* bf)
+                {
+                    ensureSize(sizeof(int) + sizeof(slimb_t));
+                    put(bf->sign);
+                    put(bf->expn);
+                    putData(bf->tab, bf->len);
+                }
+
+            private:
+                char* m_buffer;
+                size_t m_capacity;
+                size_t m_index;
+            };
+
+        CodeCacheWriter()
+            : m_stringTable(nullptr)
+            , m_codeBlockCacheInfo(nullptr)
         {
         }
 
-        ~CacheBuffer()
+        ~CodeCacheWriter()
         {
-            reset();
+            m_stringTable = nullptr;
+            m_codeBlockCacheInfo = nullptr;
+            clearBuffer();
         }
 
-        char* data() const { return m_buffer; }
-        size_t size() const { return m_index; }
-        inline bool isAvailable(size_t size) const
+        void setStringTable(CacheStringTable* table)
         {
-            return m_index + size <= m_capacity;
+            ASSERT(!!table);
+            m_stringTable = table;
         }
 
-        void ensureSize(size_t size);
-        void reset();
-
-        template <typename IntegralType>
-        void put(IntegralType value)
+        CacheStringTable* stringTable()
         {
-            ASSERT(isAvailable(sizeof(IntegralType)));
-            memcpy(m_buffer + m_index, &value, sizeof(IntegralType));
-            m_index += sizeof(IntegralType);
+            return m_stringTable;
         }
 
-        template <typename IntegralType>
-        void putData(IntegralType* data, size_t size)
+        void setCodeBlockCacheInfo(CodeBlockCacheInfo* info)
         {
-            ensureSize(sizeof(size_t) + size * sizeof(IntegralType));
-            put(size);
-            if (UNLIKELY(!size)) {
-                return;
-            }
-            memcpy(m_buffer + m_index, data, size * sizeof(IntegralType));
-            m_index += (size * sizeof(IntegralType));
+            ASSERT(!m_codeBlockCacheInfo && !!info);
+            m_codeBlockCacheInfo = info;
         }
 
-        void putString(String* string)
+        CodeBlockCacheInfo* codeBlockCacheInfo()
         {
-            ASSERT(string->length());
-            bool is8Bit = string->has8BitContent();
-            ensureSize(sizeof(bool));
-            put(is8Bit);
-            if (LIKELY(is8Bit)) {
-                putData(string->characters8(), string->length());
-            } else {
-                putData(string->characters16(), string->length());
-            }
+            return m_codeBlockCacheInfo;
         }
 
-        void putBF(bf_t* bf)
+        char* bufferData() { return m_buffer.data(); }
+        size_t bufferSize() const { return m_buffer.size(); }
+        void clearBuffer()
         {
-            ensureSize(sizeof(int) + sizeof(slimb_t));
-            put(bf->sign);
-            put(bf->expn);
-            putData(bf->tab, bf->len);
+            m_codeBlockCacheInfo = nullptr;
+            m_buffer.reset();
         }
+        void storeInterpretedCodeBlock(InterpretedCodeBlock* codeBlock);
+        void storeByteCodeBlock(ByteCodeBlock* block);
+        void storeStringTable();
 
     private:
-        char* m_buffer;
-        size_t m_capacity;
-        size_t m_index;
-    };
+        CacheBuffer m_buffer;
+        CacheStringTable* m_stringTable;
+        CodeBlockCacheInfo* m_codeBlockCacheInfo;
 
-    CodeCacheWriter()
-        : m_stringTable(nullptr)
-        , m_codeBlockCacheInfo(nullptr)
-    {
-    }
-
-    ~CodeCacheWriter()
-    {
-        m_stringTable = nullptr;
-        m_codeBlockCacheInfo = nullptr;
-        clearBuffer();
-    }
-
-    void setStringTable(CacheStringTable* table)
-    {
-        ASSERT(!!table);
-        m_stringTable = table;
-    }
-
-    CacheStringTable* stringTable()
-    {
-        return m_stringTable;
-    }
-
-    void setCodeBlockCacheInfo(CodeBlockCacheInfo* info)
-    {
-        ASSERT(!m_codeBlockCacheInfo && !!info);
-        m_codeBlockCacheInfo = info;
-    }
-
-    CodeBlockCacheInfo* codeBlockCacheInfo()
-    {
-        return m_codeBlockCacheInfo;
-    }
-
-    char* bufferData() { return m_buffer.data(); }
-    size_t bufferSize() const { return m_buffer.size(); }
-    void clearBuffer()
-    {
-        m_codeBlockCacheInfo = nullptr;
-        m_buffer.reset();
-    }
-    void storeInterpretedCodeBlock(InterpretedCodeBlock* codeBlock);
-    void storeByteCodeBlock(ByteCodeBlock* block);
-    void storeStringTable();
-
-private:
-    CacheBuffer m_buffer;
-    CacheStringTable* m_stringTable;
-    CodeBlockCacheInfo* m_codeBlockCacheInfo;
-
-    void storeByteCodeStream(ByteCodeBlock* block);
-    void storeGlobalVariableAccessCache(Context* context);
+        void storeByteCodeStream(ByteCodeBlock* block);
+        void storeGlobalVariableAccessCache(Context* context);
 };
 
 class CodeCacheReader {
