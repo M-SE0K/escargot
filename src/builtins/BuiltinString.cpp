@@ -1064,7 +1064,7 @@ static Value builtinStringToUpperCase(ExecutionState& state, Value thisValue, si
                         newStr2[destIndex++] = 'S';
                     }
                 }
-                ASSERT(destIndex == len + sharpSCount);
+                ASSERT(destIndex = len + sharpSCount);
                 return new Latin1String(std::move(newStr2));
             }
             return new Latin1String(std::move(newStr));
