@@ -843,6 +843,11 @@ static Value builtinStringCodePointAt(ExecutionState& state, Value thisValue, si
     return Value(cp);
 }
 
+static const String*& getCharAtHelper(ExecutionState& state, String* str, size_t position) {
+    const String* result = state.context()->staticStrings().charCodeToString(str->charAt(position));
+    return result;
+}
+
 static Value builtinStringCharAt(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
     RESOLVE_THIS_BINDING_TO_STRING(str, String, charAt);
@@ -854,8 +859,7 @@ static Value builtinStringCharAt(ExecutionState& state, Value thisValue, size_t 
 
     const auto length = str->length();
     if (LIKELY(0 <= position && position < (int64_t)length)) {
-        char16_t c = str->charAt(position);
-        return state.context()->staticStrings().charCodeToString(c);
+        return getCharAtHelper(state, str, position);
     } else {
         return String::emptyString();
     }
