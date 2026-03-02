@@ -1028,13 +1028,12 @@ static Value builtinStringToUpperCase(ExecutionState& state, Value thisValue, si
     RESOLVE_THIS_BINDING_TO_STRING(str, String, toUpperCase);
     if (str->has8BitContent()) {
         Latin1StringData newStr;
-        size_t len = str->length();
         newStr.resizeWithUninitializedValues(len);
 
         bool fitTo8Bit = true;
         size_t sharpSCount = 0;
         const LChar* buf = str->characters8();
-        for (size_t i = 0; i < len; i++) {
+        for (size_t i = 0; i < str->length(); i++) {
             LChar ch = buf[i];
             // U+00B5 and U+00FF are mapped to a character beyond U+00FF
             if (UNLIKELY(ch == 0xB5 || ch == 0xFF)) {
