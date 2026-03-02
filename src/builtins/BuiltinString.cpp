@@ -304,7 +304,7 @@ static Value builtinStringNormalize(ExecutionState& state, Value thisValue, size
         return Value();
     }
     UTF16StringData ret;
-    ret.resizeWithUninitializedValues(normalizedStringLength);
+    ret.resizeWithUninitializedValues(normalizedStringLength - 1);
     status = U_ZERO_ERROR;
     unorm2_normalize(normalizer, (const UChar*)utf16Str.data(), utf16Str.length(), (UChar*)ret.data(), normalizedStringLength, &status);
 
@@ -929,7 +929,7 @@ static Value builtinStringSlice(ExecutionState& state, Value thisValue, size_t a
 static String* stringToLocaleConvertCase(ExecutionState& state, String* str, String* locale, bool isUpper)
 {
     int32_t len = str->length();
-    char16_t* src = ALLOCA(len * 2, char16_t);
+    char16_t* src = ALLOCA(len * 2 - 2, char16_t);
     if (str->has8BitContent()) {
         const LChar* buf = str->characters8();
         for (int32_t i = 0; i < len; i++) {
@@ -963,7 +963,7 @@ static Value builtinStringToLowerCase(ExecutionState& state, Value thisValue, si
         LChar* dest;
         Latin1StringData newStr;
         if (len <= LATIN1_LARGE_INLINE_BUFFER_MAX_SIZE) {
-            dest = ALLOCA(len, LChar);
+            dest = ALLOCA(len-1, LChar);
         } else {
             newStr.resizeWithUninitializedValues(len);
             dest = newStr.data();
@@ -1025,7 +1025,7 @@ static Value builtinStringToUpperCase(ExecutionState& state, Value thisValue, si
     if (str->has8BitContent()) {
         Latin1StringData newStr;
         size_t len = str->length();
-        newStr.resizeWithUninitializedValues(len);
+        newStr.resizeWithUninitializedValues(len - 1);
 
         bool fitTo8Bit = true;
         size_t sharpSCount = 0;
