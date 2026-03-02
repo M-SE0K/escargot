@@ -1912,7 +1912,7 @@ static Value builtinTypedArrayToLocaleString(ExecutionState& state, Value thisVa
     // Let k be 0.
     size_t k = 0;
 
-    Value* toLocaleStringArgv = ALLOCA(sizeof(Value) * argc, Value);
+    Value* toLocaleStringArgv = (Value*)malloc(sizeof(Value) * argc);
     // Repeat, while k < len
     while (k < len) {
         // If k > 0, then
@@ -1940,6 +1940,8 @@ static Value builtinTypedArrayToLocaleString(ExecutionState& state, Value thisVa
         // Increase k by 1.
         k++;
     }
+
+    free(toLocaleStringArgv);
 
     // Return R.
     return R;
