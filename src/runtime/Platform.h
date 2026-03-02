@@ -29,7 +29,7 @@ class PromiseObject;
 
 class Platform {
 public:
-    virtual ~Platform() {}
+    ~Platform() {}
     // ArrayBuffer
     virtual void* onMallocArrayBufferObjectDataBuffer(size_t sizeInByte) = 0;
     virtual void onFreeArrayBufferObjectDataBuffer(void* buffer, size_t sizeInByte, void* deleterData) = 0;

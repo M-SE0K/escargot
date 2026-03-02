@@ -1413,7 +1413,9 @@ static Value builtinArrayLastIndexOf(ExecutionState& state, Value thisValue, siz
         n = len - 1;
     }
 
-    // If n ≥ 0, then let k be min(n, len – 1).
+    /*
+        If n ≥ 0, then let k be min(n, len – 1).
+    */
     double doubleK;
     if (n >= 0) {
         doubleK = (n == -0) ? 0 : std::min(n, len - 1.0);
