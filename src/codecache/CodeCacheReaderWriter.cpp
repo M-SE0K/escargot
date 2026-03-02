@@ -34,7 +34,7 @@ namespace Escargot {
 
 size_t CacheStringTable::add(const AtomicString& string)
 {
-    size_t index = 0;
+    int index = 0;
     for (; index < m_table.size(); index++) {
         if (m_table[index] == string) {
             return index;
