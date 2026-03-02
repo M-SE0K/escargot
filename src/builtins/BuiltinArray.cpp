@@ -1403,7 +1403,9 @@ static Value builtinArrayLastIndexOf(ExecutionState& state, Value thisValue, siz
         return Value(-1);
     }
 
-    // If argument fromIndex was passed let n be ToInteger(fromIndex); else let n be len-1.
+    /*
+        If argument fromIndex was passed let n be ToInteger(fromIndex); else let n be len-1.
+    */
     double n;
     if (argc > 1) {
         n = argv[1].toInteger(state);
