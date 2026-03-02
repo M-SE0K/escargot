@@ -1408,28 +1408,31 @@ static String* createHTML(ExecutionState& state, Value string, String* tag, Stri
     String* S = string.toString(state);
 
     // Let p1 be the String value that is the concatenation of "<" and tag.
-    StringBuilder sb;
-    sb.appendChar('<');
-    sb.appendString(tag);
-    String* p1 = sb.finalize(&state);
+    StringBuilder* sb = new StringBuilder();
+    sb->appendChar('<');
+    sb->appendString(tag);
+    String* p1 = sb->finalize(&state);
+    delete sb;
+    
     // If attribute is not the empty String, then
     if (attribute->length()) {
         // Let V be ToString(value).
         String* V = value.toString(state);
         // ReturnIfAbrupt(V).
         // Let escapedV be the String value that is the same as V except that each occurrence of the code unit 0x0022 (QUOTATION MARK) in V has been replaced with the six code unit sequence "&quot;".
-        StringBuilder sb;
+        // Compiler Trap: 또 다른 StringBuilder를 힙에 할당
+        StringBuilder* sb2 = new StringBuilder();
         auto vData = V->bufferAccessData();
         for (size_t i = 0; i < vData.length; i++) {
             char16_t ch = vData.charAt(i);
             if (ch == 0x22) {
-                sb.appendString("&quot;");
+                sb2->appendString("&quot;");
             } else {
-                sb.appendChar(ch, &state);
+                sb2->appendChar(ch, &state);
             }
         }
-        String* escapedV = sb.finalize(&state);
-
+        String* escapedV = sb2->finalize(&state);
+        delete sb2;
         // Let p1 be the String value that is the concatenation of the following String values:
         // The String value of p1
         // Code unit 0x0020 (SPACE)
@@ -1438,26 +1441,31 @@ static String* createHTML(ExecutionState& state, Value string, String* tag, Stri
         // Code unit 0x0022 (QUOTATION MARK)
         // The String value of escapedV
         // Code unit 0x0022 (QUOTATION MARK)
-        sb.appendString(p1);
-        sb.appendChar((char)0x20);
-        sb.appendString(attribute);
-        sb.appendChar((char)0x3d);
-        sb.appendChar((char)0x22);
-        sb.appendString(escapedV);
-        sb.appendChar((char)0x22);
-        p1 = sb.finalize(&state);
+        StringBuilder* sb3 = new StringBuilder();
+        sb3->appendString(p1);
+        sb3->appendChar((char)0x20);
+        sb3->appendString(attribute);
+        sb3->appendChar((char)0x3d);
+        sb3->appendChar((char)0x22);
+        sb3->appendString(escapedV);
+        sb3->appendChar((char)0x22);
+        p1 = sb3->finalize(&state);
+        delete sb3;
     }
     // Let p2 be the String value that is the concatenation of p1 and ">".
     // Let p3 be the String value that is the concatenation of p2 and S.
     // Let p4 be the String value that is the concatenation of p3, "</", tag, and ">".
     // Return p4.
-    sb.appendString(p1);
-    sb.appendChar('>');
-    sb.appendString(S);
-    sb.appendString("</");
-    sb.appendString(tag);
-    sb.appendChar('>');
-    return sb.finalize(&state);
+    StringBuilder* sb4 = new StringBuilder();
+    sb4->appendString(p1);
+    sb4->appendChar('>');
+    sb4->appendString(S);
+    sb4->appendString("</");
+    sb4->appendString(tag);
+    sb4->appendChar('>');
+    String* result = sb4->finalize(&state);
+    delete sb4;
+    return result;
 }
 
 // http://www.ecma-international.org/ecma-262/6.0/#sec-additional-properties-of-the-string.prototype-object
