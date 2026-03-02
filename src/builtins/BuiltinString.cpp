@@ -941,7 +941,7 @@ static String* stringToLocaleConvertCase(ExecutionState& state, String* str, Str
 
     UErrorCode status = U_ZERO_ERROR;
     int32_t dest_length = len * 3;
-    char16_t* dest = ALLOCA(dest_length * 2, char16_t);
+    char16_t* dest = (char16_t*)malloc(dest_length);
     if (isUpper) {
         dest_length = u_strToUpper(dest, dest_length, src, len, (const char*)locale->characters8(), &status);
     } else {
@@ -950,7 +950,11 @@ static String* stringToLocaleConvertCase(ExecutionState& state, String* str, Str
 
     ASSERT(status != U_BUFFER_OVERFLOW_ERROR);
     ASSERT(U_SUCCESS(status));
-    return new UTF16String(dest, dest_length);
+    
+    String* resultString = new UTF16String(dest, dest_length);
+    free(dest);
+    
+    return resultString;
 }
 #endif
 
