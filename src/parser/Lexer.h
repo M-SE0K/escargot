@@ -281,21 +281,7 @@ public:
 
     class ScannerResult {
     public:
-        ScannerResult()
-            : type(InvalidToken)
-            , secondaryKeywordKind(NotKeyword)
-            , startWithZero(false)
-            , octal(false)
-            , hasAllocatedString(false)
-            , hasNonComputedNumberLiteral(false)
-            , hasNumberSeparatorOnNumberLiteral(false)
-            , lineNumber(0)
-            , lineStart(0)
-            , start(0)
-            , end(0)
-            , valueRegExp()
-        {
-        }
+        ScannerResult() : type(InvalidToken), secondaryKeywordKind(NotKeyword), startWithZero(false), octal(false), hasAllocatedString(false), hasNonComputedNumberLiteral(false), hasNumberSeparatorOnNumberLiteral(false), lineNumber(0), lineStart(0), start(0), end(0), valueRegExp() {}
 
         // ScannerResult always allocated on the stack
         MAKE_STACK_ALLOCATED();
