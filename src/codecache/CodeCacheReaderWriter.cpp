@@ -931,7 +931,7 @@ CacheStringTable* CodeCacheReader::loadStringTable(Context* context)
             }
         }
 
-        delete[] buffer;
+        delete buffer;
 
     } else {
         LChar* lBuffer = new LChar[maxLength + 1];
@@ -958,8 +958,8 @@ CacheStringTable* CodeCacheReader::loadStringTable(Context* context)
             }
         }
 
-        delete[] lBuffer;
-        delete[] uBuffer;
+        delete lBuffer;
+        delete uBuffer;
     }
 
     ASSERT(table->table().size() == tableSize);
