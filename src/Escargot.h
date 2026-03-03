@@ -17,8 +17,8 @@
  *  USA
  */
 
-#ifndef __Escargot__
-#define __Escargot__
+#ifndef Escargot
+#define Escargot
 
 #include <algorithm>
 #include <cassert>
