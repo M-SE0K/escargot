@@ -988,7 +988,7 @@ static Value builtinArraySplice(ExecutionState& state, Value thisValue, size_t a
     A->setThrowsException(state, ObjectPropertyName(state.context()->staticStrings().length), Value(actualDeleteCount), A);
 
     // Let items be an internal List whose elements are, in left to right order, the portion of the actual argument list starting with item1. The list will be empty if no such items are present.
-    Value* items;
+    Value* items ;
     int64_t itemCount = 0;
 
     if (argc > 2) {
