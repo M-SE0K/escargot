@@ -864,6 +864,11 @@ static Value builtinStringCharAt(ExecutionState& state, Value thisValue, size_t 
 static Value builtinStringFromCharCode(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
 {
     if (argc == 1) {
+        uint32_t charCode = argv[0].toUint32(state);
+        if (charCode & 0xFFFF == 0) {
+            return String::emptyString();
+        }
+
         char16_t c = argv[0].toUint32(state) & 0xFFFF;
         return state.context()->staticStrings().charCodeToString(c);
     }
