@@ -333,6 +333,13 @@ static Value builtinStringRepeat(ExecutionState& state, Value thisValue, size_t 
 
     repeatCount = static_cast<int32_t>(count);
 
+    #ifdef ESCARGOT_DEBUG_STRING_REPEAT
+    char debugBuffer[512];
+    auto strData = str->toNonGCUTF8StringData();
+    snprintf(debugBuffer, sizeof(debugBuffer), strData.data());
+    ESCARGOT_LOG_INFO("[StringRepeat] %s\n", debugBuffer);
+    #endif
+
     StringBuilder builder;
     for (int i = 0; i < repeatCount; i++) {
         builder.appendString(str);
@@ -342,8 +349,6 @@ static Value builtinStringRepeat(ExecutionState& state, Value thisValue, size_t 
 
 static Value stringReplaceFastPathHelper(ExecutionState& state, String* string, String* replaceString, RegexMatchResult& result)
 {
-    ASSERT(string && replaceString);
-
     auto replaceStringBad = replaceString->bufferAccessData();
     bool hasDollar = false;
     for (size_t i = 0; i < replaceStringBad.length; i++) {

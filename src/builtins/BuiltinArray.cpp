@@ -177,16 +177,14 @@ static int64_t flattenIntoArray(ExecutionState& state, Value target, Value sourc
     return targetIndex;
 }
 
-static Value builtinArrayIsArray(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
-{
+static Value builtinArrayIsArray(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget){
     ASSERT(argv != nullptr);
 
     return Value(argv[0].isObject() && argv[0].asObject()->isArray(state));
 }
 
 // Array.from ( items [ , mapfn [ , thisArg ] ] )#
-static Value builtinArrayFrom(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
-{
+static Value builtinArrayFrom(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget){
     Value items = argv[0];
     Value mapfn;
     if (argc > 1) {
@@ -391,8 +389,7 @@ static PromiseObject* arrayFromAsyncAsyncAwaitOperation(ExecutionState& state, c
     ArrayFromAsyncAsyncWorkerStage##stage : if (completionHasThrownRecord) { data->m_promiseCapability.m_promise->asPromiseObject()->reject(state, completion); } \
     return;
 
-static void builtinArrayFromAsyncAsyncWorker(ExecutionState& state, ArrayFromAsyncRecord* data)
-{
+static void builtinArrayFromAsyncAsyncWorker(ExecutionState& state, ArrayFromAsyncRecord* data){
     if (data->m_awaitResumeStage == 1) {
         data->m_awaitResumeStage = 0;
         goto ArrayFromAsyncAsyncWorkerStage1;
