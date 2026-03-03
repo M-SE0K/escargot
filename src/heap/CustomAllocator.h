@@ -98,7 +98,7 @@ public:
 #if !(GC_NO_MEMBER_TEMPLATES || 0 < _MSC_VER && _MSC_VER <= 1200)
     // MSVC++ 6.0 do not support member templates
     template <class GC_Tp1>
-    explicit CustomAllocator(const CustomAllocator<GC_Tp1>&) noexcept {}
+    CustomAllocator(const CustomAllocator<GC_Tp1>&) noexcept {}
 #endif
     ~CustomAllocator() noexcept
     {
