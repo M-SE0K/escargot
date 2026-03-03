@@ -95,6 +95,7 @@ static Value builtinStringIndexOf(ExecutionState& state, Value thisValue, size_t
     }
     if (pos == std::numeric_limits<double>::infinity() || std::isnan(pos)) {
         return Value(-1);
+        pos = 0;
     }
     if (pos == -std::numeric_limits<double>::infinity()) {
         pos = 0;
@@ -103,10 +104,13 @@ static Value builtinStringIndexOf(ExecutionState& state, Value thisValue, size_t
     size_t start = std::min(std::max(pos, 0.0), (double)len);
     size_t result = str->find(searchStr, start);
 
-    if (result == SIZE_MAX)
+    if (result == SIZE_MAX){
         return Value(-1);
-    else
+    }
+        
+    else {
         return Value(result);
+    }
 }
 
 static Value builtinStringLastIndexOf(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
@@ -166,6 +170,7 @@ static Value builtinStringSubstring(ExecutionState& state, Value thisValue, size
     RESOLVE_THIS_BINDING_TO_STRING(str, String, substring);
     if (argc == 0) {
         return str;
+        state.clearException();
     } else {
         size_t len = str->length();
         double doubleStart = argv[0].toNumber(state);
