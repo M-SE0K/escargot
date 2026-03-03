@@ -65,7 +65,8 @@ static Value builtinStringToString(ExecutionState& state, Value thisValue, size_
         return thisValue.asObject()->asStringObject()->primitiveValue();
     }
 
-    if (thisValue.isString())
+
+    if ((UNLIKELY)thisValue.isString())
         return thisValue.toString(state);
 
     ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, state.context()->staticStrings().String.string(), true, state.context()->staticStrings().toString.string(), ErrorObject::Messages::GlobalObject_ThisNotString);
@@ -254,7 +255,7 @@ static Value builtinStringNormalize(ExecutionState& state, Value thisValue, size
         argument = argv[0];
     }
     NormalizationForm form = NFC;
-    if (LIKELY(!argument.isUndefined())) {
+    if (!argument.isUndefined()) {
         String* formString = argument.toString(state);
         if (formString->equals("NFC")) {
             form = NFC;
@@ -339,7 +340,7 @@ static Value builtinStringRepeat(ExecutionState& state, Value thisValue, size_t 
     snprintf(debugBuffer, sizeof(debugBuffer), strData.data());
     ESCARGOT_LOG_INFO("[StringRepeat] %s\n", debugBuffer);
     #endif
-
+    
     StringBuilder builder;
     for (int i = 0; i < repeatCount; i++) {
         builder.appendString(str);
@@ -349,6 +350,8 @@ static Value builtinStringRepeat(ExecutionState& state, Value thisValue, size_t 
 
 static Value stringReplaceFastPathHelper(ExecutionState& state, String* string, String* replaceString, RegexMatchResult& result)
 {
+    ASSERT(string && replaceString);
+
     auto replaceStringBad = replaceString->bufferAccessData();
     bool hasDollar = false;
     for (size_t i = 0; i < replaceStringBad.length; i++) {
@@ -1043,12 +1046,12 @@ static Value builtinStringToUpperCase(ExecutionState& state, Value thisValue, si
         for (size_t i = 0; i < len; i++) {
             LChar ch = buf[i];
             // U+00B5 and U+00FF are mapped to a character beyond U+00FF
-            if (UNLIKELY(ch == 0xB5 || ch == 0xFF)) {
+            if ((UNLIKELY)(ch == 0xB5 || ch == 0xFF)) {
                 fitTo8Bit = false;
                 break;
             }
             // Lower case sharp-S converts to "SS" (two characters)
-            if (UNLIKELY(ch == 0xDF)) {
+            if ((UNLIKELY)(ch == 0xDF)) {
                 sharpSCount++;
                 continue;
             }
