@@ -287,7 +287,7 @@ UTF16StringDataNonGCStd utf8StringToUTF16StringNonGC(const char* buf, const size
         }
     }
 
-    return str;
+    return std::move(str);
 }
 
 UTF16StringData utf8StringToUTF16String(const char* buf, const size_t len)
