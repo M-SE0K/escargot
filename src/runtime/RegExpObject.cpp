@@ -526,7 +526,7 @@ ArrayObject* RegExpObject::createRegExpMatchedArray(ExecutionState& state, const
             indices->defineOwnProperty(state, ObjectPropertyName(state.context()->staticStrings().groups), ObjectPropertyDescriptor(Value(), ObjectPropertyDescriptor::AllPresent));
         } else {
             Object* groups = new Object(state, Object::PrototypeIsNull);
-            for (auto it = m_yarrPattern->m_captureGroupNames.begin(); it != m_yarrPattern->m_captureGroupNames.end(); ++it) {
+            for (auto it = m_yarrPattern->m_captureGroupNames.begin(); it != m_yarrPattern->m_captureGroupNames.end(); it++) {
                 auto foundMapElement = m_yarrPattern->m_namedGroupToParenIndices.find(*it);
                 if (foundMapElement != m_yarrPattern->m_namedGroupToParenIndices.end()) {
                     Value value;
@@ -550,7 +550,7 @@ ArrayObject* RegExpObject::createRegExpMatchedArray(ExecutionState& state, const
         arr->defineOwnProperty(state, ObjectPropertyName(state.context()->staticStrings().groups), ObjectPropertyDescriptor(Value(), ObjectPropertyDescriptor::AllPresent));
     } else {
         Object* groups = new Object(state, Object::PrototypeIsNull);
-        for (auto it = m_yarrPattern->m_captureGroupNames.begin(); it != m_yarrPattern->m_captureGroupNames.end(); ++it) {
+        for (auto it = m_yarrPattern->m_captureGroupNames.begin(); it != m_yarrPattern->m_captureGroupNames.end(); it++) {
             auto foundMapElement = m_yarrPattern->m_namedGroupToParenIndices.find(*it);
             if (foundMapElement != m_yarrPattern->m_namedGroupToParenIndices.end()) {
                 Value value;
