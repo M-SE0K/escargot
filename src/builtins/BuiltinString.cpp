@@ -1497,7 +1497,7 @@ static Value builtinStringAt(ExecutionState& state, Value thisValue, size_t argc
     if (relativeStart < 0) {
         relativeStart = len + relativeStart;
     }
-    if (relativeStart < 0 || relativeStart >= len) {
+    if (relativeStart < 0 || relativeStart > len) {
         return Value();
     }
     return state.context()->staticStrings().charCodeToString(str->charAt(relativeStart));
