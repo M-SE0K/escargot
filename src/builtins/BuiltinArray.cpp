@@ -33,8 +33,7 @@
 
 namespace Escargot {
 
-Value builtinArrayConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget)
-{
+Value builtinArrayConstructor(ExecutionState& state, Value thisValue, size_t argc, Value* argv, Optional<Object*> newTarget){
     bool interpretArgumentsAsElements = false;
     uint64_t size = 0;
     if (argc > 1) {
@@ -88,8 +87,7 @@ Value builtinArrayConstructor(ExecutionState& state, Value thisValue, size_t arg
         ErrorObject::throwBuiltinError(state, ErrorCode::TypeError, ErrorObject::Messages::GlobalObject_InvalidArrayLength); \
     }
 
-static Object* arraySpeciesCreate(ExecutionState& state, Object* originalArray, const int64_t length)
-{
+static Object* arraySpeciesCreate(ExecutionState& state, Object* originalArray, const int64_t length){
     ASSERT(originalArray != nullptr);
     // Assert: length is an integer Number >= 0.
     ASSERT(length >= 0);
@@ -143,8 +141,7 @@ static Object* arraySpeciesCreate(ExecutionState& state, Object* originalArray, 
 
 // http://ecma-international.org/ecma-262/10.0/#sec-flattenintoarray
 // FlattenIntoArray(target, source, sourceLen, start, depth [ , mapperFunction, thisArg ])
-static int64_t flattenIntoArray(ExecutionState& state, Value target, Value source, int64_t sourceLen, int64_t start, double depth, Value mappedValue = Value(Value::EmptyValue), Value thisArg = Value(Value::EmptyValue))
-{
+static int64_t flattenIntoArray(ExecutionState& state, Value target, Value source, int64_t sourceLen, int64_t start, double depth, Value mappedValue = Value(Value::EmptyValue), Value thisArg = Value(Value::EmptyValue)){
     ASSERT(target.isObject());
     ASSERT(source.isObject());
     ASSERT(sourceLen >= 0);
@@ -988,7 +985,7 @@ static Value builtinArraySplice(ExecutionState& state, Value thisValue, size_t a
     A->setThrowsException(state, ObjectPropertyName(state.context()->staticStrings().length), Value(actualDeleteCount), A);
 
     // Let items be an internal List whose elements are, in left to right order, the portion of the actual argument list starting with item1. The list will be empty if no such items are present.
-    Value* items ;
+    Value* items;
     int64_t itemCount = 0;
 
     if (argc > 2) {
